@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pretty - JVKE Slideshow</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<style>
+  /* Slideshow Container */
+.slideshow-container {
+    position: relative;
+    max-width: 900px;  /* Adjust for your preferred size */
+    height: 500px;
+    overflow: hidden;
+    border-radius: 10px; /* Soft rounded edges */
+    box-shadow: 0px 10px 20px rgba(255, 255, 255, 0.2); /* Elegant glow effect */
+}
+
+/* Slides */
+.slide {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 2s ease-in-out; /* Smooth fade effect */
+}
+
+/* Image Styling */
+.slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+img {
+    display: block;
+    
+}
+
+/* Active Slide */
+.active {
+    opacity: 1;
+}
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    height: 100vh;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #7b2cbf, #9d4edd, #ff66b2, #ff99cc);
+    background-size: 400% 400%;
+    animation: gradientMove 8s infinite alternate;
+}
+
+@keyframes gradientMove {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 100% 50%; }
+}
+
+/* Floating Sparkles */
+@keyframes sparkle {
+    0% { opacity: 0; transform: translateY(0px) scale(0.8); }
+    50% { opacity: 1; transform: translateY(-30px) scale(1); }
+    100% { opacity: 0; transform: translateY(-50px) scale(1.2); }
+}
+
+.sparkle {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: gold;
+    border-radius: 50%;
+    box-shadow: 0px 0px 10px gold;
+    animation: sparkle 1.5s infinite;
+}
+
+
+/* Door container */
+.door-container {
+    position: relative;
+    width: 300px;
+    height: 400px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 1s ease-in-out;
+    z-index: 10;
+}
+
+.door {
+    width: 150px;
+    height: 100%;
+    background: linear-gradient(90deg, #9d4edd, #7b2cbf);
+    border: 2px solid gold;
+    box-shadow: 0px 0px 30px rgba(255, 215, 0, 0.9);
+    position: relative;
+    display: inline-block;
+    transition: transform 1.5s ease-in-out;
+}
+
+/* Opening doors */
+.door-container.open .door-left { animation: openLeft 2s forwards; }
+.door-container.open .door-right { animation: openRight 2s forwards; }
+
+@keyframes openLeft { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
+@keyframes openRight { 0% { transform: translateX(0); } 100% { transform: translateX(100%); } }
+/* Hover effect (for a slight glow) */
+.door:hover {
+    box-shadow: 0px 0px 50px rgba(255, 215, 0, 1);
+    transform: scale(1.02);
+}
+
+/* Slideshow */
+/* Ensure the slideshow is hidden initially */
+.slideshow-container {
+    display: none; /* Hide initially */
+    position: relative;
+    width: 80%;
+    max-width: 900px;
+    height: 500px;
+    overflow: hidden;
+    border-radius: 15px;
+    box-shadow: 0px 0px 20px rgba(255, 255, 255, 0.3);
+}
+
+
+.mySlides {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 0; /* Hide slides initially */
+    transition: opacity 1.5s ease-in-out;
+}
+
+
+
+.mySlides.active {
+    opacity: 1; /* Show only the active slide */
+}
+
+
+
+.mySlides img {
+    width: 100%; /* Ensure images fit */
+    height: auto;
+    border: 8px solid #ff66b2;
+    border-radius: 20px;
+    box-shadow: 0px 0px 20px rgba(255, 105, 180, 0.8),
+                0px 0px 40px rgba(255, 182, 193, 0.6);
+   
+    object-fit: cover;
+}
+
+/* Floating Hearts Animation */
+.heart {
+    position: absolute;
+    font-size: 24px;
+    color: rgb(255, 255, 255);
+    opacity: 0;
+    animation: floatUp 3s infinite;
+}
+
+@keyframes floatUp {
+    0% { transform: translateY(0); opacity: 1; }
+    100% { transform: translateY(-50px); opacity: 0; }
+}
+
+/* Lyrics Container */
+.lyrics-container {
+    position: absolute;
+    bottom: 10%;
+    width: 80%;
+    max-width: 600px;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 15px;
+    border-radius: 5px;
+    backdrop-filter: blur(5px);
+    left: 50%;
+    transform: translateX(-50%);
+    display: none;
+}
+
+.lyrics {
+    font-size: 24px;
+    font-weight: bold;
+    background-image: linear-gradient(90deg, #ff66b2, #ffcc66, #66ff99, #6699ff, #ff66b2);
+    background-size: 300% 100%;
+    color: transparent;
+    -webkit-background-clip: text;
+    background-clip: text;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.7s ease-in-out, transform 0.7s ease-in-out;
+}
+
+.lyrics.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+@keyframes glow {
+    0% { text-shadow: 0px 0px 10px rgb(185, 10, 156); }
+    50% { text-shadow: 0px 0px 20px rgb(199, 110, 235); }
+    100% { text-shadow: 0px 0px 10px rgb(3, 5, 97); }
+}
+
+.songTitle {
+    position: absolute;
+    text-align: center;
+    top: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 30px;
+    color: rgb(80, 7, 95);
+    opacity: 0;
+    animation: glow 1.5s infinite alternate;
+    transition: opacity 2s ease-in-out;
+}
+
+
+    /* Closing doors */
+    @keyframes closeLeft {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(0); }
+    }
+    
+    @keyframes closeRight {
+        0% { transform: translateX(100%); }
+        100% { transform: translateX(0); }
+    }
+
+    
+
+        /* Floating Hearts Container */
+        .floating-hearts-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1; /* Behind the slideshow */
+            overflow: hidden;
+            pointer-events: none; /* Prevent interaction */
+        }
+        
+        /* Individual Heart */
+        .floating-heart {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: rgba(255, 0, 0, 0.89); /* Semi-transparent pink */
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+            animation: floatUp 5s linear infinite, fadeInOut 5s ease-in-out infinite;
+        }
+        
+        /* Heart Animation */
+        @keyframes floatUp {
+            0% {
+                transform: translateY(100vh) scale(0.5);
+            }
+            100% {
+                transform: translateY(-10vh) scale(1);
+            }
+        }
+        
+        @keyframes fadeInOut {
+            0%, 100% {
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+            }
+        }
+
+       
+            /* Closing Message Styling */
+            .closing-message {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: rgba(233, 17, 150, 0.8);
+                color: white;
+                padding: 20px 40px;
+                border-radius: 10px;
+                font-size: 12px;
+                text-align: center;
+                opacity: 0;
+                visibility: hidden;
+                transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
+                z-index: 100; /* Ensure it appears above other elements */
+            }
+            
+        
+</style>
+<body>
+
+
+<div class="door-container" id="door">
+    <div class="door door-left"></div>
+    <div class="door door-right"></div>
+    <div class="heart">Open the gate beautiful</div>
+    <div id="songTitle" class="songTitle">Pretty JVKE</div>
+</div>
+<div class="floating-hearts-container"></div>
+<!-- Slideshow -->
+<div class="slideshow-container" id= "slideshow">
+    <!-- Image Slides -->
+    <div class="mySlides fade">
+        <img src="images/ionah (1).jpeg"  >
+    </div>
+
+    <div class="mySlides fade">
+        <img src="images/ionah (2).jpeg"  >
+    </div>
+
+    <div class="mySlides fade">
+        <img src="images/ionah (3).jpeg"  >
+    </div>
+
+    <div class="mySlides fade">
+        <img src="images/ionah (4).jpeg"  >
+    </div>
+
+    <div class="mySlides fade">
+        <img src="images/ionah (00).jpeg"  >
+    </div>
+
+    <div class="mySlides fade">
+        <img src="images/ionah (6).jpeg"  >
+    </div>
+
+    <div class="mySlides fade">
+        <img src="images/ionah (7).jpeg"  >
+    </div>
+
+    <div class="mySlides fade">
+        <img src="images/ionah (8).jpeg"  >
+    </div>
+
+    <div class="mySlides fade">
+        <img src="images/ionah (10).jpeg"  >
+    </div>
+
+
+    <div class="mySlides fade">
+        <img src="images/ionah (12).jpeg"  >
+    </div>
+
+    <div class="mySlides fade">
+        <img src="images/ionah (13).jpeg"  >
+    </div>
+
+
+    <div class="mySlides fade">
+        <img src="images/ionah (15).jpeg"  >
+    </div>
+
+    <div class="mySlides fade">
+        <img src="images/ionah (16).jpeg"  >
+    </div>
+    <div class="mySlides fade">
+        <img src="images/yona (1).jpg"  >
+    </div>
+
+    <div class="mySlides fade">
+        <img src="images/yona (2).jpg"  >
+    </div>
+
+    <div class="mySlides fade">
+        <img src="images/yona (3).jpg"  >
+    </div>
+
+    <div class="mySlides fade">
+        <img src="images/yona (4).jpg"  >
+    </div>
+
+    <div class="mySlides fade">
+        <img src="images/yona (5).jpg"  >
+    </div>
+
+    <div class="mySlides fade">
+        <img src="images/yona (6).jpg"  >
+    </div>
+
+    <div class="mySlides fade">
+        <img src="images/yona (7).jpg"  >
+    </div>
+
+    <div class="mySlides fade">
+        <img src="images/yona (8).jpg"  >
+    </div>
+
+    <div class="mySlides fade">
+        <img src="images/yona (10).jpg"  >
+    </div>
+
+
+    <div class="mySlides fade">
+        <img src="images/yona (11).jpg"  >
+    </div>
+
+    <div class="mySlides fade">
+        <img src="images/yona (12).jpg"  >
+    </div>
+
+    <div class="mySlides fade">
+        <img src="images/ionah (17).jpeg"  >
+    </div>
+
+    <div class="mySlides fade">
+        <img src="images/ionah (19).jpeg"  >
+    </div>
+
+    <div class="mySlides fade">
+        <img src="images/ionah (5).jpeg"  >
+    </div>
+
+    <div class="mySlides fade">
+        <img src="images/ionah (21).jpeg"  >
+    </div>
+
+    <div class="mySlides fade">
+        <img src="images/ionah (22).jpeg"  >
+    </div>
+
+    <div class="mySlides fade">
+        <img src="images/ionah (24).jpeg"  >
+    </div>
+
+    <div class="mySlides fade">
+        <img src="images/ionah (25).jpeg"  >
+    </div>
+
+    <div class="mySlides fade">
+        <img src="images/ionah (26).jpeg"  >
+    </div>
+
+    <div class="mySlides fade">
+        <img src="images/ionah (27).jpeg"  >
+    </div>
+
+    <div class="mySlides fade">
+        <img src="images/ionah (28).jpeg"  >
+    </div>
+
+    <div class="mySlides fade">
+        <img src="images/ionah (29).jpeg"  >
+    </div>
+
+    <div class="mySlides fade">
+        <img src="images/ionah (30).jpeg"  >
+    </div>
+
+    <div class="mySlides fade">
+        <img src="images/ionah (31).jpeg"  >
+    </div>
+
+    <div class="mySlides fade">
+        <img src="images/ionah (118).jpeg"  >
+    </div>
+
+<!-- Lyrics -->
+<div class="lyrics-container" id="lyricsBox">
+    <p class="lyrics" id="lyricText">♪</p>
+</div>
+<div id="closingMessage" class="closing-message">All of the picture you sent are so beautiful, so I made a web to store you're ineffable beauty. No words can describe how beautiful you are. Just I know you're beautiful just the way you are.</div>
+<audio id="song" src="pretty.mp3"></audio>
+<audio id="heartbeat" src="heartbeat.mp3"></audio>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const doorContainer = document.querySelector(".door-container");
+        const slides = document.querySelectorAll(".mySlides");
+        const song = document.getElementById("song");
+        const door = document.getElementById("door");
+        const slideshow = document.getElementById("slideshow");
+        const lyricsBox = document.getElementById("lyricsBox");
+        const songTitle = document.getElementById("songTitle");
+        const heartbeat = document.getElementById("heartbeat");
+        const lyricText = document.getElementById("lyricText");
+    
+        let slideIndex = 0;
+    
+        // Ensure doors are closed initially
+        door.classList.add("door-close");
+    
+        // Open doors when clicked
+        doorContainer.addEventListener("click", function () {
+            doorContainer.classList.add("open"); // Apply the open animation
+    
+            setTimeout(() => {
+                doorContainer.style.display = "none"; // Hide doors after animation
+                startShow();
+            }, 1500);
+        });
+    
+        function showSlides() {
+            if (slides.length === 0) return;
+    
+            slides.forEach(slide => slide.classList.remove("active"));
+            slides[slideIndex].classList.add("active");
+            slideIndex = (slideIndex + 1) % slides.length;
+    
+            setTimeout(showSlides, 2500); // Change slide every 2.5s
+        }
+    
+        function startShow() {
+            heartbeat.play(); // Play heartbeat first
+    
+            setTimeout(() => {
+                heartbeat.pause();
+                heartbeat.currentTime = 0;
+                song.play(); // Start song after heartbeat
+                slideshow.style.display = "block";
+                lyricsBox.style.display = "block";
+                showSlides();
+            }, 3000);
+        }
+    
+        // Show and hide song title smoothly
+        setTimeout(() => {
+            songTitle.style.opacity = "1";
+        }, 0);
+    
+        setTimeout(() => {
+            songTitle.style.opacity = "0";
+        }, 10000);
+    
+        song.addEventListener("ended", () => {
+            const closingMessage = document.getElementById("closingMessage");
+        
+            // Show the closing message
+            closingMessage.style.visibility = "visible";
+            closingMessage.style.opacity = "1";
+        
+            // Hide the message and start the door-closing animation after 5 seconds (longer duration)
+            setTimeout(() => {
+                closingMessage.style.opacity = "0";
+                closingMessage.style.visibility = "hidden";
+        
+                // Reset the slideshow and lyrics
+                slideshow.style.display = "none"; // Hide the slideshow
+                lyricsBox.style.display = "none"; // Hide the lyrics box
+        
+                // Reset the song and slide index
+                song.currentTime = 0; // Reset the song to the beginning
+                slideIndex = 0; // Reset the slide index
+                slides.forEach(slide => slide.classList.remove("active")); // Remove active class from all slides
+        
+                // Show the doors and trigger the closing animation
+                doorContainer.style.display = "flex"; // Show the doors again
+                const doorLeft = document.querySelector(".door-left");
+                const doorRight = document.querySelector(".door-right");
+        
+                doorLeft.style.animation = "closeLeft 2s forwards";
+                doorRight.style.animation = "closeRight 2s forwards";
+        
+                // Remove the "open" class after the animation
+                setTimeout(() => {
+                    doorContainer.classList.remove("open");
+                }, 2000); // Match the animation duration
+            }, 15000); // Delay for the message display (5 seconds)
+        });
+    
+        // Lyrics 
+        const lyrics = [
+            { time: 0, text: "'Cause you're my pretty (ooh, ooh)" },
+            { time: 8.74, text: "Definition of beauty (ooh, ooh)" },
+            { time: 17.9, text: "Pretty girl, you make everything feel alright" },
+            { time: 21.5, text: "Pretty girl, pretty as the stars in the sky" },
+            { time: 25.5, text: "Belt of Orion, the way we're aligning" },
+            { time: 31, text: "And heaven knows that it breaks my soul, ooh-oh" },
+            { time: 35.7, text: "When you don't know you're beautiful" },
+            { time: 39.3, text: "And I won't let it go, ooh-oh" },
+            { time: 43.7, text: "I need you to know" },
+
+            { time: 45.8, text: "That you're my pretty (ooh, ooh)" },
+            { time: 54.5, text: "Definition of beauty (ooh, ooh)" },
+            { time: 62.4, text: "And out of everything I've seen" },
+            { time: 65.7, text: "Nothing can compete (nothing can compete)" },
+            { time: 67.4, text: "With you, ooh-ooh" },
+            { time: 70.4, text: "My pretty (ooh)" },
+
+            { time: 87.3, text: "Yeah, the sun has good taste" },
+            { time: 90.3, text: "He's peeking through the blinders" },
+            { time: 92.3, text: "Just to get a glimpse of your face" },
+            { time: 95, text: "And he traveled quite a way" },
+            { time: 98, text: "Ninety million miles to see what I get to see every day" },
+            { time: 105, text: "Darling, you're beautiful in every single way" },
+            { time: 108.3, text: "And there's nothing I'll change" },
+            { time: 112, text: "My love stays the same" },
+            { time: 114.7, text: "'Cause you're my pretty (ooh, ooh)" },
+            { time: 123.4, text: "Definition of beauty (ooh, ooh)" },
+            { time: 131.4, text: "And out of everything I've seen" },
+            { time: 134.6, text: "Nothing can compete with you" },
+            { time: 136.3, text: "With you, ooh-ooh" },
+            { time: 139.6, text: "My pretty (ooh)" }
+        ];
+    
+        function updateLyrics() {
+            const currentTime = song.currentTime;
+            for (let i = lyrics.length - 1; i >= 0; i--) {
+                if (currentTime >= lyrics[i].time) {
+                    lyricText.classList.remove("show"); // Remove previous effect
+                    setTimeout(() => {
+                        lyricText.innerHTML = lyrics[i].text;
+                        lyricText.classList.add("show"); // Add animated effect
+                    }, 300);
+                    break;
+                }
+            }
+        }
+    
+        song.addEventListener("timeupdate", updateLyrics);
+    });
+    
+   
+        const floatingHeartsContainer = document.querySelector('.floating-hearts-container');
+    
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.classList.add('floating-heart');
+            heart.style.left = `${Math.random() * 100}%`; // Random horizontal position
+            heart.style.animationDuration = `${Math.random() * 3 + 3}s`; // Random duration
+            heart.style.transform = `scale(${Math.random() * 0.5 + 0.5})`; // Random size
+            floatingHeartsContainer.appendChild(heart);
+    
+            // Remove the heart after animation ends
+            setTimeout(() => {
+                heart.remove();
+            }, 5000);
+        }
+    
+        // Generate hearts every 500ms
+        setInterval(createHeart, 500);
+   
+    </script>
+    
+
+</body>
+</html>
